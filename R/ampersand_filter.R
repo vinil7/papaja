@@ -1,6 +1,6 @@
 ampersand_filter <- function() {
-  std_input <- file("stdin")
-  ast <- readLines(std_input, warn = FALSE)
+  std_input <- file("stdin", encoding = "UTF-8")
+  ast <- readLines(std_input, warn = FALSE, encoding = "UTF-8")
   close.connection(std_input)
 
   # write(ast, "~/ast_test.txt")
