@@ -1,10 +1,10 @@
 ampersand_filter <- function() {
   std_input <- file("stdin")
   ast <- readLines(std_input, warn = FALSE)
-  ast <- iconv(ast, to = "UTF-8")
   close.connection(std_input)
 
-  # write(ast, "~/ast_test.txt")
+  write(ast, "~/ast_test.txt")
+  write(Encoding(ast), "~/ast_encoding.txt")
 
   intext_regex <- "\"citationMode\":\\{\"t\":\"AuthorInText\".*?\\}\\]\\]\\}"
 
@@ -17,7 +17,12 @@ ampersand_filter <- function() {
     stringr::str_sub(ast, intext_locations[i, "start"], intext_locations[i, "end"]) <- corrected_citations[i]
   }
 
-  # write(ast, "~/ast_test2.txt")
+  write(ast, "~/ast_test2.txt")
+  write(Encoding(ast), "~/ast_encoding.txt", append = TRUE)
+
+  ast <- iconv(ast, to = "UTF-8")
+  write(ast, "~/ast_test3.txt")
+  write(Encoding(ast), "~/ast_encoding.txt", append = TRUE)
 
   write(ast, stdout())
   closeAllConnections()
