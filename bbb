@@ -1,0 +1,166 @@
+---
+title: "MTCars Dataset Analysis"
+author:
+- address: 130 Descanso Dr. Apt 158 - San Jose, CA, 95134
+  affiliation: '1'
+  corresponding: yes
+  email: mohamed.shibl@hotmail.com
+  name: Mohamed Shibl
+affiliation:
+- id: '1'
+  institution: Harrisburg University of Science and Technology
+output:
+  papaja::apa6_pdf: default
+  pdf_document: default
+class: man
+figsintext: no
+figurelist: no
+footnotelist: no
+keywords: mtcars, mpg, manual, automatic
+lang: english
+lineno: no
+bibliography: r-references.bib
+shorttitle: MTCars Dataset Analysis
+tablelist: no
+abstract: |
+  This research is an examination of MTCars dataset using R programming. The research performs relationships between MPG and different factors. The data was gotten from Motor Trend US magazine from 1974. Information incorporates fuel utilization and 10 parts of car configuration plan and execution for 32 vehicles and data plot with 32 discernments on 11 factors.
+---
+
+```{r include = TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+library("papaja")
+```
+
+This paper was written in the R programming language [@RCoreTeam] using the papaja [@R-papaja] package.
+
+## Summary of MTCars Dataset
+
+Few of the variables are marked with specific names to comprehend data effectively. "am" variable is marked with "Auto" if value is 0 and "Manual" on the off chance that it is 1. Likewise, "cyl" variable has given values "Small", "Medium", "Large" depends on number of cylinders. Following table showcases six records from MTCars dataset. 
+
+Please note that the data in the table uses name abbreviations such as "am" which marks wether the car is manual vs automatic. We also hav "cyl" which represents "cylinder" and has the values of large, med and small. 
+
+\newpage
+
+## Data Analysis on MTcars dataset
+Number of automatic and manual cars and their proportion
+```{r mtcars}
+cars_auto = subset(mtcars, am == 0)
+cars_auto_str = paste('Automatic: ', nrow(cars_auto))
+cars_auto_str_prop = paste('Automatic Proportion: ', 
+                           nrow(cars_auto)/nrow(mtcars))
+
+cars_manual = subset(mtcars, am == 1)
+cars_manual_str = paste('Manual: ', nrow(cars_manual))
+cars_manual_str_prop = paste('Manual Proportion: ', 
+                             nrow(cars_manual)/nrow(mtcars))
+print(cars_auto_str)
+print(cars_auto_str_prop)
+print(cars_manual_str)
+print(cars_manual_str_prop)
+```
+
+## Histogram for MPG of cars
+This distribution is approx. normal
+
+```{r mpg}
+histmpg <- hist(mtcars$mpg, breaks=10, xlab = "Miles per gallon", 
+     main = "Historgram of Miles per gallon of cars", xlim = range(10:35))
+lines(density(mtcars$mpg))
+```
+
+## MPG by transmission type
+It appears that manual transmission comes ahead in terms of MPG
+```{r histtransmission} 
+histtr <- plot(mtcars$mpg ~ as.factor(mtcars$am), mtcars, 
+     xlab = "Transmission type", ylab="Miles per gallon", 
+     main="Histogram of MPG by transmission type")
+```
+
+
+## MPG Histogram based on weight of car
+Weight of the car is inversly pproprtional to mileage. 
+```{r weight}
+wt= cut(mtcars$wt, 3, labels = c("Small-Size","Med-Size","Large-Size"))
+histwt <-hist(mtcars$wt, xlab="Mileage", 
+     main="Mileage of engine based on weight", col="green")
+```
+
+```{r plots}
+print(histmpg, split = c(1, 1, 2, 2), more = TRUE)
+
+print(histtr, split = c(2, 1, 2, 2), more = TRUE)
+
+print(histwt, split = c(1, 2, 2, 2), more = FALSE)
+
+```
+
+\newpage
+## MPG and transmission 
+The result suggests that manual cars have better mpg
+```{r, echo=TRUE, results='asis', fig.height=4, fig.width=4}
+aovam= aov(mtcars$mpg ~ factor(am), 
+           data=mtcars)
+model.tables(aovam, type="effects")
+```
+
+## MPG and cylinders
+The result suggests that the number of cylinders of the smaller cars make them more gas efficent.
+```{r, echo=TRUE, results='asis', fig.height=4, fig.width=4}
+aovcyl= aov(mtcars$mpg ~ factor(mtcars$cyl), 
+            data=mtcars)
+model.tables(aovcyl, type="effects")
+```
+
+## MPG and gear
+The result suggests that cars with 4 gears are better (in terms of mpg) than the ones with less gears
+```{r, echo=TRUE, results='asis', fig.height=4, fig.width=4}
+aovgear= aov(mtcars$mpg ~ factor(mtcars$gear), 
+             data=mtcars)
+model.tables(aovgear, type="effects")
+```
+
+## MPG and weight
+The result suggests smaller (lower weight) cars have better mpg
+
+```{r, echo=TRUE, results='asis', fig.height=4, fig.width=4}
+wtfactor= factor(wt, 
+                 levels= c("Small-Size","Med-Size","Large-Size")
+                 , labels = c("Small","Medium","Large"))
+aovwt= aov(mtcars$mpg ~ wtfactor, data=mtcars)
+model.tables(aovwt, type="effects")
+```
+
+\newpage
+
+## Linear Model Analysis
+```{r, echo=TRUE, results='asis', fig.height=4, fig.width=4}
+Model <- lm(mtcars$mpg ~ mtcars$wt, data=mtcars)
+coef.Model <- coef(Model)
+coef.Model
+plot(mtcars$mpg ~ mtcars$wt, data=mtcars, 
+     ylab="Mileage", xlab="Weight of Car")
+abline(coef=coef.Model)
+```
+
+\newpage
+## Summary
+This research paper reached a number of conclusions (based on the provided dataset):
+- Cars with manual tranmission has a better mpg than manual cars
+- Cars with less cylinders have better mpg than manual cars
+- Cars with 4 gears have better mpg than cars with a lower number of gears
+- Cars with lower weight have better mpg
+\newpage
+
+# References
+
+```{r echo = TRUE}
+library(citr)
+r_refs(file = "r-references.bib")
+my_citation <- cite_r(file = "r-references.bib")
+```
+
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+Calls: <Anonymous> ... tryCatch -> tryCatchList -> tryCatchOne -> <Anonymous>
+Execution halted
